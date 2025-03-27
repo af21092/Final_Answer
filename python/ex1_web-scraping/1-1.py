@@ -86,4 +86,4 @@ for store_link in store_links[:50]:
 
 #CSV出力
 df = pd.DataFrame(data,columns=["店舗名","電話番号","メールアドレス","都道府県","市区町村","番地","建物名","URL","SSL"])
-df.to_csv(r"C:\Users\fu3ka\OneDrive\デスクトップ\Exercise_for_Pool\python\ex1_web-scraping\1-1.csv",encoding="utf-8-sig")
+df.to_csv(r"C:\Users\fu3ka\OneDrive\デスクトップ\Exercise_for_Pool\python\ex1_web-scraping\1-1.csv", index = False, encoding="utf-8-sig")
