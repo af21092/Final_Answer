@@ -27,7 +27,7 @@ def ssl_check(url):
 
 #住所の分割処理
 def split_address(address):
-    match = re.match(r'([^都道府県]+[都道府県])([^市区町村]+[市区町村])(.+)', address)
+    match = re.match( r'(.+?[都道府県])(.+?[市区町村])?(.*)', address)
     if match:
         return match.groups()
     return "", "", address  # 住所が特殊な場合はそのまま返す        
@@ -37,7 +37,6 @@ response = requests.get(url,headers=header)
 html = response.text
 soup = BeautifulSoup(html, "html.parser")
 
-# elems = soup.select("#__next > div > div.layout_body__LvaRc > main > div.style_resultRestaurant__WhVwP > div:nth-child(2) > div:nth-child(3) > article > div.style_title___HrjW > a")
 store_links = []
 for i in range(1,3):
     # 1ページ目はそのままのURL
@@ -72,7 +71,8 @@ for i in range(1,3):
 
 data=[]
 
-for store_link in store_links[:10]:
+#各店舗情報を取得
+for store_link in store_links[:50]:
     store_res = requests.get(store_link,headers=header)
     time.sleep(3) #アイドリングタイム
     store_res.encoding = store_res.apparent_encoding #文字化け対策
@@ -80,16 +80,25 @@ for store_link in store_links[:10]:
 
     store_name = store_soup.find("p",class_ = "fn org summary",id="info-name").get_text()
     store_phone = store_soup.find("span",class_ = "number").get_text()
-    store_mail = ""
+
+    store_mail = store_soup.find("span",class_ = "mail")
+    #メールがない場合、空文字を入れる
+    if store_mail:
+        store_mail = store_mail.get_text()
+    else:
+        store_mail = ""
+
     region = store_soup.find("span",class_ = "region").get_text()
+    prefecture ,city ,street = split_address(region)
+
     locality = store_soup.find("span",class_ = "locality")
-    #建物名がない場合があるため、空文字を入れる
+    #建物名がない場合、空文字を入れる
     if locality:
         locality = locality.get_text()
     else:
         locality = ""
-    prefecture ,city ,street = split_address(region)
-    # print(store_name, store_phone,prefecture,city,street,locality)    
+    
+       
     store_url = ""
     store_ssl = ""
     data.append([store_name, store_phone, store_mail, prefecture, city, street, locality, store_url, store_ssl])
