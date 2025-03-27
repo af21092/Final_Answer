@@ -14,16 +14,6 @@ header = {
     'User-Agent': user_agent
 }
 
-#デジタル証明書確認
-def ssl_check(url):
-    try:
-        parsed_url = urlparse(url)
-        if parsed_url.scheme == "https":
-            return True
-        else:
-            return False
-    except:
-        return False
 
 #住所の分割処理
 def split_address(address):
@@ -59,15 +49,6 @@ for i in range(1,3):
     time.sleep(3) #アイドリングタイム
 
     
-
-# elems = soup.find_all(href=re.compile("gnavi.co.jp"),class_ = "style_titleLink__oiHVJ")
-# links = [elem.attrs['href'] for elem in elems]
-
-
-#店舗ページへのURLをリストに格納
-# store_links = [elem.attrs['href'] for elem in elems[:50]]
-# print(store_links)
-# print(len(store_links))
 
 data=[]
 
