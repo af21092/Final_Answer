@@ -45,11 +45,10 @@ def ssl_check(url):
 
 #住所の分割処理
 def split_address(address):
-    match = re.match(r'([^都道府県]+[都道府県])([^市区町村]+[市区町村])(.+)', address)
+    match = re.match( r'(.+?[都道府県])(.+?[市区町村])?(.*)', address)
     if match:
         return match.groups()
-    return "", "", address  # 住所が特殊な場合はそのまま返す     
-
+    return "", "", address  # 住所が特殊な場合はそのまま返す  
 
 # for i in range(1,4):
 #     # 1ページ目はそのままのURL
@@ -72,6 +71,7 @@ def split_address(address):
 # print(store_links)
 # print(len(store_links))
 
+#各店舗情報を取得
 data=[]
 for store_link in store_links[:1]:
     store_res = driver.get(store_link)
@@ -100,5 +100,16 @@ for store_link in store_links[:1]:
     store_ssl = ssl_check(store_url)
     data.append([store_name, store_phone,  prefecture, city, street, locality, store_url, store_ssl])
 print(data)
+
+# CSV出力
+f = open(r"C:\Users\fu3ka\OneDrive\デスクトップ\Exercise_for_Pool\python\ex1_web-scraping\1-2.csv", mode = 'w', encoding='utf-8-sig', errors='ignore')
+
+writer = csv.writer(f, lineterminator='\n') 
+csv_header = ["店舗名","電話番号","メールアドレス","都道府県","市区町村","番地","建物名","URL","SSL"]
+writer.writerow(csv_header)
+writer.writerows(data)
+
+f.close()
+
 
 driver.close()
