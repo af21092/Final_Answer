@@ -10,6 +10,7 @@ from selenium import webdriver
 
 import chromedriver_binary_sync
 from selenium import webdriver
+chrome_driver_path = r"C:\Users\fu3ka\OneDrive\デスクトップ\Exercise_for_Pool\python\ex1_web-scraping\chromedriver.exe"
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
