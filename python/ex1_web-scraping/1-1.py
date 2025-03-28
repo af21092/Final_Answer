@@ -62,10 +62,10 @@ for store_link in store_links[:50]:
     store_name = store_soup.find("p",class_ = "fn org summary",id="info-name").get_text()
     store_phone = store_soup.find("span",class_ = "number").get_text()
 
-    store_mail = store_soup.find("span",class_ = "mail")
+    mail_element = store_soup.find(href=re.compile("mailto:"))
     #メールがない場合、空文字を入れる
-    if store_mail:
-        store_mail = store_mail.get_text()
+    if mail_element:
+        store_mail = mail_element["href"].replace("mailto:", "")
     else:
         store_mail = ""
 

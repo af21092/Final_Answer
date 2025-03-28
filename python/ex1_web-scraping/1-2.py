@@ -79,7 +79,8 @@ for store_link in store_links[:50]:
 
     #メールがない場合、空文字を入れる
     try:
-        store_mail = driver.find_element(By.CSS_SELECTOR, ".mail").text
+        store_mail_mailto = driver.find_element(By.XPATH, '//a[contains(@href, "mailto:")]').get_attribute("href")
+        store_mail = store_mail_mailto.lstrip('mailto:')
     except NoSuchElementException:
         store_mail = ""  
 
@@ -95,12 +96,12 @@ for store_link in store_links[:50]:
     
     #URLがない場合、空文字を入れる
     try:
-        store_url = driver.find_element(By.XPATH, '//*[@id="sv-site"]/li/a').get_attribute("href")
+        store_url = driver.find_element(By.XPATH, "//a[contains(text(), 'お店のホームページ')]").get_attribute("href")
     except NoSuchElementException:
         store_url = ""
     store_ssl = ssl_check(store_url)
     data.append([store_name, store_phone,  store_mail, prefecture, city, street, locality, store_url, store_ssl])
-print(data)
+
 
 # CSV出力
 f = open(r"C:\Users\fu3ka\OneDrive\デスクトップ\Exercise_for_Pool\python\ex1_web-scraping\1-2.csv", mode = 'w', encoding='utf-8-sig', errors='ignore')
@@ -111,6 +112,9 @@ writer.writerow(csv_header)
 writer.writerows(data)
 
 f.close()
+
+
+
 
 
 driver.close()
