@@ -4,7 +4,7 @@ import re
 import time
 import ssl
 from urllib.parse import urlparse
-
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
 
 
@@ -95,13 +95,41 @@ for store_link in store_links[:50]:
     
     prefecture ,city ,street = split_address(region)
     
+    final_url = ""
     #URLがない場合、空文字を入れる
     try:
-        store_url = driver.find_element(By.XPATH, "//a[contains(text(), 'お店のホームページ')]").get_attribute("href")
-    except NoSuchElementException:
+
         store_url = ""
-    store_ssl = ssl_check(store_url)
-    data.append([store_name, store_phone,  store_mail, prefecture, city, street, locality, store_url, store_ssl])
+        elements = driver.find_elements(By.XPATH, "//a[contains(text(), 'お店のホームページ')]")
+        if elements:
+            store_url = driver.execute_script("return arguments[0].href;", elements[0])
+        else:
+            elements = driver.find_elements(By.XPATH, '//a[contains(@title, "オフィシャルページ")]')
+            if elements:
+                store_url = driver.execute_script("return arguments[0].href;", elements[0])
+
+        if store_url:
+            # JavaScriptで新しいタブを開く
+            driver.execute_script(f"window.open('{store_url}', '_blank');")
+
+            # 新しいタブに切り替え
+            driver.switch_to.window(driver.window_handles[-1])
+
+            try:
+                # 最大20秒待機してURLがリダイレクトするのを確認
+                WebDriverWait(driver, 20).until(lambda d: d.current_url != store_url)
+                final_url = driver.current_url  # 変化があればリダイレクト先のURLを取得
+            except TimeoutException:
+                final_url = store_url  # 変化がなければ元のURLをそのまま記録
+    except NoSuchElementException:
+        final_url = ""
+    
+    if final_url:
+        store_ssl = ssl_check(final_url)
+    else:
+        store_ssl = ""
+
+    data.append([store_name, store_phone,  store_mail, prefecture, city, street, locality, final_url, store_ssl])
 
 
 # CSV出力
