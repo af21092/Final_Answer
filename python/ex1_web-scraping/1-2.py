@@ -75,35 +75,44 @@ for store_link in store_links[:50]:
     store_res = driver.get(store_link)
     time.sleep(3) #アイドリングタイム
 
+    #店舗の名前取得
     store_name = driver.find_element(By.ID, "info-name").text
+
+    #店舗の電話番号取得
     store_phone = driver.find_element(By.CLASS_NAME, "number").text
 
-    #メールがない場合、空文字を入れる
+    #店舗のメールアドレス取得
     try:
         store_mail_mailto = driver.find_element(By.XPATH, '//a[contains(@href, "mailto:")]').get_attribute("href")
         store_mail = store_mail_mailto.lstrip('mailto:')
     except NoSuchElementException:
+        #メールがない場合、空文字を入れる
         store_mail = ""  
 
+    #店舗の住所取得
     region = driver.find_element(By.CLASS_NAME, "region").text
     
-    #建物名がない場合、空文字を入れる
+    #店舗の建物名取得
     try:
         locality = driver.find_element(By.CLASS_NAME, "locality").text
     except NoSuchElementException:
+        #建物名がない場合、空文字を入れる
         locality = ""
     
+    #住所を正規表現にする
     prefecture ,city ,street = split_address(region)
     
     final_url = ""
-    #URLがない場合、空文字を入れる
+    #URLがない場合は空文字
     try:
 
+        #「お店のホームページ」のURLを取得
         store_url = ""
         elements = driver.find_elements(By.XPATH, "//a[contains(text(), 'お店のホームページ')]")
         if elements:
             store_url = driver.execute_script("return arguments[0].href;", elements[0])
         else:
+            #「お店のホームぺージ」がない場合は「オフィシャルページ」のURLを取得
             elements = driver.find_elements(By.XPATH, '//a[contains(@title, "オフィシャルページ")]')
             if elements:
                 store_url = driver.execute_script("return arguments[0].href;", elements[0])
@@ -124,6 +133,7 @@ for store_link in store_links[:50]:
     except NoSuchElementException:
         final_url = ""
     
+    #URLのSSL証明書チェック
     if final_url:
         store_ssl = ssl_check(final_url)
     else:
